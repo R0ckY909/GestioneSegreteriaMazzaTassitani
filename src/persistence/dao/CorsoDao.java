@@ -8,7 +8,7 @@ public interface CorsoDao {
 	
 	public void save(Corso corso); // Create
 	
-	public Corso findByPrimaryKey(Long id); // Retrieve
+	public Corso findByPrimaryKey(Long codice); // Retrieve
 	
 	public List<Corso> findAll();       
 	

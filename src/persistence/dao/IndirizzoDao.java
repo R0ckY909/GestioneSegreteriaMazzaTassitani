@@ -8,7 +8,7 @@ public interface IndirizzoDao {
 	
 	public void save(Indirizzo indirizzo); // Create
 	
-	public Indirizzo findByPrimaryKey(Long id); // Retrieve
+	public Indirizzo findByPrimaryKey(Long codice); // Retrieve
 	
 	public List<Indirizzo> findAll();       
 	

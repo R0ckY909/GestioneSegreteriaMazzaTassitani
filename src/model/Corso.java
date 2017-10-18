@@ -1,9 +1,13 @@
 package model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Corso {
 	
 	private Long id;
 	private String nome;
+	private Set<Studente> studenti;
 	
 	public Corso() { }
 	 
@@ -19,6 +23,10 @@ public class Corso {
 	public String getNome() {
 		return nome;
 	}
+	
+	public Set<Studente> getStudenti() {
+		return studenti;
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -27,6 +35,15 @@ public class Corso {
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
+	
+	public void aggiungiStudente(Studente studente) {
+		if (studenti == null) {
+			studenti = new HashSet<Studente>();
+		}
+		
+	}
+	
+	
  
 	@Override
 	public String toString() {

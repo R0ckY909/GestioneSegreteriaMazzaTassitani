@@ -8,7 +8,7 @@ public interface GruppoDao {
 	
 	public void save(Gruppo gruppo); // Create
 	
-	public Gruppo findByPrimaryKey(Long id); // Retrieve
+	public Gruppo findByPrimaryKey(Long codice); // Retrieve
 	
 	public List<Gruppo> findAll();       
 	

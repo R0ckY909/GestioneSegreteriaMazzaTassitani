@@ -11,7 +11,7 @@ import persistence.dao.StudenteDao;
 
 public class MainJDBC {
 	
-//  ESERCIZIO (richiede Java8	
+//  ESERCIZIO (richiede Java8)
 //	install Postgres https://www.postgresql.org/download/
 //  scegliere utente: postgres -- password: postgres
 //	
