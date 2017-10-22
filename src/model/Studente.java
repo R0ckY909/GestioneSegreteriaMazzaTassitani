@@ -9,7 +9,6 @@ public class Studente {
 	private String nome;
 	private String cognome;
 	private Date dataNascita;
-	
 	private Indirizzo indirizzo;
 
 	public Studente() { }
@@ -63,6 +62,16 @@ public class Studente {
 	}
 	
 	@Override
+	public String toString() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		return "[" + this.getMatricola() + ", " + 
+					 this.getNome() + ", " + 
+					 this.getCognome() + ", " +
+					 sdf.format(this.getDataNascita()) + ", " + 
+					 this.getIndirizzo().getCodice() +"]"; 		
+	}
+	
+	@Override
 	public int hashCode() {
 		return this.matricola.hashCode();
 	}
@@ -71,16 +80,6 @@ public class Studente {
 	public boolean equals(Object object) {
 		Studente studente = (Studente) object;
 		return (this.getMatricola() == studente.getMatricola());
-	}
-	
-	@Override
-	public String toString() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		return "[" + this.getMatricola() + ", " + 
-					 this.getNome() + ", " + 
-					 this.getCognome() + ", " +
-					 sdf.format(this.getDataNascita()) + ", " + 
-					 this.getIndirizzo().toString() +"]"; 		
 	}
 	
 }

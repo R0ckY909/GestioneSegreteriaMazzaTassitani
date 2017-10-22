@@ -1,20 +1,32 @@
 package model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class Gruppo {
 	
-	private Long id;
+	private Long codice;
 	private String nome;
 	private Set<Studente> studenti;
 
-	public Gruppo() {
-		this.studenti = new HashSet<>();
+	public Gruppo() { 
+		this.studenti = new HashSet<Studente>();
 	}
 	
-	public Long getId() {
-		return id;
+	public Gruppo(String nome) {
+		this.nome = nome;
+		this.studenti = new HashSet<Studente>();
+	}
+	
+	public Gruppo(Long codice, String nome) {
+		this.codice = codice;
+		this.nome = nome;
+		this.studenti = new HashSet<Studente>();
+	}
+	
+	public Long getCodice() {
+		return codice;
 	}
 
 	public String getNome() {
@@ -25,8 +37,8 @@ public class Gruppo {
 		return this.studenti;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setCodice(Long codice) {
+		this.codice = codice;
 	}
 
 	public void setNome(String nome) {
@@ -38,22 +50,38 @@ public class Gruppo {
 	}
 	
 	public void addStudente(Studente studente) {
-		this.getStudenti().add(studente); // fondamentale usare .getStudenti() per il proxy!!!
+		this.studenti.add(studente); // fondamentale usare .getStudenti() per il proxy!!!
 	}
 	
-	public void removeStudente(Studente studente){
-		this.getStudenti().remove(studente); // fondamentale usare .getStudenti() per il proxy!!!
+	public void removeStudente(Studente studente) {
+		this.studenti.remove(studente); // fondamentale usare .getStudenti() per il proxy!!!
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer("[");
-		str.append(this.getId() + ", " + this.getNome());
+		str.append(this.getCodice() + ", " + this.getNome());
 		str.append(", {");
-		for (Studente s : this.getStudenti()) {
-			str.append(s.toString());
+		Iterator<Studente> iter = studenti.iterator();
+		while (iter.hasNext()) {
+			str.append(iter.next().getMatricola());
+			if (iter.hasNext()) {
+				str.append(", ");
+			}
 		}
-		str.append("}\n");
+		str.append("}]\n");
 		return str.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.codice.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		Gruppo gruppo = (Gruppo) object;
+		return (this.getCodice() == gruppo.getCodice());
 	}
 	
 }

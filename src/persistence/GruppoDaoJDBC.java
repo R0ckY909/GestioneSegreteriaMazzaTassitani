@@ -20,14 +20,15 @@ class GruppoDaoJDBC implements GruppoDao {
 		this.dataSource = dataSource;
 	}
 
+	@Override
 	public void save(Gruppo gruppo) {
 		Connection connection = this.dataSource.getConnection();
 		try {
 			Long id = IdBroker.getId(connection);
-			gruppo.setId(id);
-			String insert = "insert into gruppo(id, nome) values (?,?)";
+			gruppo.setCodice(id);
+			String insert = "insert into gruppo(codice, nome) values (?,?)";
 			PreparedStatement statement = connection.prepareStatement(insert);
-			statement.setLong(1, gruppo.getId());
+			statement.setLong(1, gruppo.getCodice());
 			statement.setString(2, gruppo.getNome());
 			// connection.setAutoCommit(false);
 			// serve in caso gli studenti non siano stati salvati. Il DAO studente apre e chiude una transazione nuova.
@@ -59,9 +60,9 @@ class GruppoDaoJDBC implements GruppoDao {
 			if (studenteDao.findByPrimaryKey(studente.getMatricola()) == null) {
 				studenteDao.save(studente);
 			}
-			String update = "update studente SET gruppo_id = ? WHERE matricola = ?";
+			String update = "update studente SET gruppo_codice = ? WHERE matricola = ?";
 			PreparedStatement statement = connection.prepareStatement(update);
-			statement.setLong(1, gruppo.getId());
+			statement.setLong(1, gruppo.getCodice());
 			statement.setString(2, studente.getMatricola());
 			// int s = statement.executeUpdate();
 			statement.executeUpdate();
@@ -78,39 +79,29 @@ class GruppoDaoJDBC implements GruppoDao {
 	}
 
 	/* 
-	 * versione con join
+	 * Versione con join
 	 */
 	
 	public Gruppo findByPrimaryKeyJoin(Long id) {
-		
 		Connection connection = this.dataSource.getConnection();
 		Gruppo gruppo = null;
-		
 		try {
-			
 			PreparedStatement statement;
-			
-			String query = "select g.id as g_id, g.nome as g_nome, s.matricola as matricola, s.nome as nome, " +
+			String query = "select g.codice as g_codice, g.nome as g_nome, s.matricola as matricola, s.nome as nome, " +
 						   "s.cognome as cognome, s.data_nascita as data_nascita " +
 						   "from gruppo g left outer join studente s on g.id=s.gruppo_id " +
 						   "where g.nome = ?";
-			
 			statement = connection.prepareStatement(query);
 			statement.setLong(1, id);
-			
 			ResultSet result = statement.executeQuery();
-			
 			boolean primaRiga = true;
-			
 			while (result.next()) {
-				
 				if (primaRiga) {
 					gruppo = new Gruppo();
-					gruppo.setId(result.getLong("g_id"));				
+					gruppo.setCodice(result.getLong("g_codice"));				
 					gruppo.setNome(result.getString("g_nome"));
 					primaRiga = false;
 				}
-				
 				if (result.getString("matricola") != null) {
 					Studente studente = new Studente();
 					studente.setMatricola(result.getString("matricola"));
@@ -121,130 +112,85 @@ class GruppoDaoJDBC implements GruppoDao {
 					gruppo.addStudente(studente);
 				}
 			}
-			
 		} catch (SQLException e) {
-			
 			throw new PersistenceException(e.getMessage());
-			
 		} finally {
-			
 			try {
-				
 				connection.close();
-				
 			} catch (SQLException e) {
-				
 				throw new PersistenceException(e.getMessage());
-				
 			}
-			
 		}	
-		
 		return gruppo;
 	}
 
 	/* 
-	 * versione con Lazy Load
+	 * Versione con Lazy Load
 	 */
 	
-	public Gruppo findByPrimaryKey(Long id) {
-		
+	@Override
+	public Gruppo findByPrimaryKey(Long codice) {
 		Connection connection = this.dataSource.getConnection();
-		
 		Gruppo gruppo = null;
-		
 		try {
-			
 			PreparedStatement statement;
-			
 			String query = "select * from gruppo where id = ?";
-			
 			statement = connection.prepareStatement(query);
-			statement.setLong(1, id);
-			
+			statement.setLong(1, codice);
 			ResultSet result = statement.executeQuery();
-			
 			if (result.next()) {
 				gruppo = new GruppoProxy(dataSource);
-				gruppo.setId(result.getLong("id"));				
+				gruppo.setCodice(result.getLong("codice"));				
 				gruppo.setNome(result.getString("nome"));
 			}
-			
 		} catch (SQLException e) {
-			
 			throw new PersistenceException(e.getMessage());
-			
 		} finally {
-			
 			try {
-				
 				connection.close();
-				
 			} catch (SQLException e) {
-				
 				throw new PersistenceException(e.getMessage());
-				
 			}
-			
 		}	
-		
 		return gruppo;
 	}
 
+	@Override
 	public List<Gruppo> findAll() {
-		
 		Connection connection = this.dataSource.getConnection();
-		List<Gruppo> gruppi = new ArrayList<>();
-		
+		List<Gruppo> gruppi = new ArrayList<Gruppo>();
 		try {
-			
 			Gruppo gruppo;
 			PreparedStatement statement;
-			
 			String query = "select * from gruppo";
-			
 			statement = connection.prepareStatement(query);
-			
 			ResultSet result = statement.executeQuery();
-			
 			while (result.next()) {
 				gruppo = new GruppoProxy(dataSource);
-				gruppo.setId(result.getLong("id"));				
+				gruppo.setCodice(result.getLong("codice"));				
 				gruppo.setNome(result.getString("nome"));
 				gruppi.add(gruppo);
 			}
-			
 		} catch (SQLException e) {
-			
 			throw new PersistenceException(e.getMessage());
-			
 		} finally {
-			
 			try {
-				
 				connection.close();
-				
 			} catch (SQLException e) {
-				
-				throw new PersistenceException(e.getMessage());
-				
-			}
-			
+				throw new PersistenceException(e.getMessage());	
+			}	
 		}
-		
 		return gruppi;
-		
 	}
 
 	@Override
 	public void update(Gruppo gruppo) {
 		Connection connection = this.dataSource.getConnection();
 		try {
-			
-			String update = "update gruppo SET nome = ? WHERE id = ?";
+			String update = "update gruppo SET nome = ? WHERE codice = ?";
 			PreparedStatement statement = connection.prepareStatement(update);
 			statement.setString(1, gruppo.getNome());
-			statement.setLong(2, gruppo.getId());
+			statement.setLong(2, gruppo.getCodice());
 			// connection.setAutoCommit(false);
 			// connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);	
 			statement.executeUpdate();
@@ -259,28 +205,21 @@ class GruppoDaoJDBC implements GruppoDao {
 				}
 			} 
 		} finally {
-			
 			try {
-				
 				connection.close();
-				
 			} catch (SQLException e) {
-				
-				throw new PersistenceException(e.getMessage());
-				
-			}
-			
+				throw new PersistenceException(e.getMessage());	
+			}	
 		}
-		
 	}
 	
 	@Override
 	public void delete(Gruppo gruppo) {
 		Connection connection = this.dataSource.getConnection();
 		try {
-			String delete = "delete FROM gruppo WHERE id = ? ";
+			String delete = "delete FROM gruppo WHERE codice = ? ";
 			PreparedStatement statement = connection.prepareStatement(delete);
-			statement.setLong(1, gruppo.getId());
+			statement.setLong(1, gruppo.getCodice());
 
 			/* 
 			 * rimuoviamo gli studenti dal gruppo (ma non dal database) 

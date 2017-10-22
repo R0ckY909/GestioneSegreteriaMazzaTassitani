@@ -7,6 +7,15 @@ public class Dipartimento {
 	
 	public Dipartimento() { }
 	
+	public Dipartimento(String nome) {
+		this.nome = nome;
+	}
+	
+	public Dipartimento(Long codice, String nome) {
+		this.codice = codice;
+		this.nome = nome;
+	}
+	
 	public Long getCodice() {
 		return codice;
 	}

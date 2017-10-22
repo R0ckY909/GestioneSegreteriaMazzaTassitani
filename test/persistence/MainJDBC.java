@@ -57,7 +57,7 @@ public class MainJDBC {
 		// find gruppo
 		// delete gruppo/studenti
 		
-		Studente studente1 = new Studente("00000001","Rossi","Mario", date1, indirizzo1);
+		Studente studente1 = new Studente("00000001", "Rossi", "Mario", date1, indirizzo1);
 		
 		Studente studente2 = new Studente();
 		studente2.setCognome("Verdi");

@@ -8,9 +8,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import model.Gruppo;
+import model.Indirizzo;
 import model.Studente;
+import persistence.dao.IndirizzoDao;
 
 class GruppoProxy extends Gruppo {
+	
 	private DataSource dataSource;
 
 	public GruppoProxy(DataSource dataSource) {
@@ -18,13 +21,13 @@ class GruppoProxy extends Gruppo {
 	}
 
 	public Set<Studente> getStudenti() { 
-		Set<Studente> studenti = new HashSet<>();
+		Set<Studente> studenti = new HashSet<Studente>();
 		Connection connection = this.dataSource.getConnection();
 		try {
 			PreparedStatement statement;
 			String query = "select * from studente where gruppo_id = ?";
 			statement = connection.prepareStatement(query);
-			statement.setLong(1, this.getId());
+			statement.setLong(1, this.getCodice());
 			ResultSet result = statement.executeQuery();
 			while (result.next()) {
 				Studente studente = new Studente();
@@ -33,7 +36,9 @@ class GruppoProxy extends Gruppo {
 				studente.setCognome(result.getString("cognome"));
 				long secs = result.getDate("data_nascita").getTime();
 				studente.setDataNascita(new java.util.Date(secs));
-				studenti.add(studente);
+				IndirizzoDao indirizzoDao = new IndirizzoDaoJDBC(dataSource);
+				Indirizzo indirizzo = indirizzoDao.findByPrimaryKey(result.getLong("indirizzo_codice"));
+				studente.setIndirizzo(indirizzo);
 			}
 		} catch (SQLException e) {
 			throw new PersistenceException(e.getMessage());

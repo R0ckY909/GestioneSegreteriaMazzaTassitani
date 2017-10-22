@@ -2,6 +2,7 @@ package persistence;
 
 import model.Indirizzo;
 import model.Studente;
+import persistence.dao.IndirizzoDao;
 import persistence.dao.StudenteDao;
 
 import java.sql.Connection;
@@ -19,17 +20,18 @@ class StudenteDaoJDBC implements StudenteDao {
 		this.dataSource = dataSource;
 	}
 
+	@Override
 	public void save(Studente studente) {
 		Connection connection = this.dataSource.getConnection();
 		try {
-			String insert = "insert into studente(matricola, nome, cognome, data_nascita, indirizzo) values (?,?,?,?,?)";
+			String insert = "insert into studente(matricola, nome, cognome, data_nascita, indirizzo_codice) values (?,?,?,?,?)";
 			PreparedStatement statement = connection.prepareStatement(insert);
 			statement.setString(1, studente.getMatricola());
 			statement.setString(2, studente.getNome());
 			statement.setString(3, studente.getCognome());
 			long secs = studente.getDataNascita().getTime();
 			statement.setDate(4, new java.sql.Date(secs));
-			statement.setObject(5, studente.getIndirizzo());
+			statement.setLong(5, studente.getIndirizzo().getCodice());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e.getMessage());
@@ -42,6 +44,7 @@ class StudenteDaoJDBC implements StudenteDao {
 		}
 	}  
 
+	@Override
 	public Studente findByPrimaryKey(String matricola) {
 		Connection connection = this.dataSource.getConnection();
 		Studente studente = null;
@@ -58,7 +61,9 @@ class StudenteDaoJDBC implements StudenteDao {
 				studente.setCognome(result.getString("cognome"));
 				long secs = result.getDate("data_nascita").getTime();
 				studente.setDataNascita(new java.util.Date(secs));
-				studente.setIndirizzo((Indirizzo) result.getObject("indirizzo"));
+				IndirizzoDao indirizzoDao = new IndirizzoDaoJDBC(dataSource);
+				Indirizzo indirizzo = indirizzoDao.findByPrimaryKey(result.getLong("indirizzo_codice"));
+				studente.setIndirizzo(indirizzo);
 			}
 		} catch (SQLException e) {
 			throw new PersistenceException(e.getMessage());
@@ -72,6 +77,7 @@ class StudenteDaoJDBC implements StudenteDao {
 		return studente;
 	}
 
+	@Override
 	public List<Studente> findAll() {
 		Connection connection = this.dataSource.getConnection();
 		List<Studente> studenti = new LinkedList<>();
@@ -88,7 +94,9 @@ class StudenteDaoJDBC implements StudenteDao {
 				studente.setCognome(result.getString("cognome"));
 				long secs = result.getDate("data_nascita").getTime();
 				studente.setDataNascita(new java.util.Date(secs));
-				studente.setIndirizzo((Indirizzo) result.getObject("indirizzo"));
+				IndirizzoDao indirizzoDao = new IndirizzoDaoJDBC(dataSource);
+				Indirizzo indirizzo = indirizzoDao.findByPrimaryKey(result.getLong("indirizzo_codice"));
+				studente.setIndirizzo(indirizzo);
 				studenti.add(studente);
 			}
 		} catch (SQLException e) {
@@ -103,17 +111,18 @@ class StudenteDaoJDBC implements StudenteDao {
 		return studenti;
 	}
 
+	@Override
 	public void update(Studente studente) {
 		Connection connection = this.dataSource.getConnection();
 		try {
-			String update = "update studente SET nome = ?, cognome = ?, data_nascita = ?, indirizzo = ? WHERE matricola = ?";
+			String update = "update studente SET nome = ?, cognome = ?, data_nascita = ?, indirizzo_codice = ? WHERE matricola = ?";
 			PreparedStatement statement = connection.prepareStatement(update);
 			statement.setString(1, studente.getNome());
 			statement.setString(2, studente.getCognome());
 			long secs = studente.getDataNascita().getTime();
 			statement.setDate(3, new java.sql.Date(secs));
 			statement.setString(4, studente.getMatricola());
-			statement.setObject(5, studente.getIndirizzo());
+			statement.setLong(5, studente.getIndirizzo().getCodice());
 			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new PersistenceException(e.getMessage());
@@ -126,6 +135,7 @@ class StudenteDaoJDBC implements StudenteDao {
 		}
 	}
 
+	@Override
 	public void delete(Studente studente) {
 		Connection connection = this.dataSource.getConnection();
 		try {

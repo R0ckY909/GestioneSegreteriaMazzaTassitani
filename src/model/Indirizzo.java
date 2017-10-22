@@ -1,31 +1,31 @@
 package model;
 
-import java.io.Serializable;
-
-public class Indirizzo implements Serializable {
+public class Indirizzo {
 	
-	private static final long serialVersionUID = 2320191540302383128L;
-	
-	private Long id;
+	private Long codice;
 	private String nome;
 	
 	public Indirizzo() { }
-	 
-	public Indirizzo(Long id, String nome) {
-		this.id = id;
+	
+	public Indirizzo(String nome) {
+		this.nome = nome;
+	}
+	
+	public Indirizzo(Long codice, String nome) {
+		this.codice = codice;
 		this.nome = nome;
 	}
 
-	public Long getId() {
-		return id;
+	public Long getCodice() {
+		return codice;
 	}
 
 	public String getNome() {
 		return nome;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setCodice(Long codice) {
+		this.codice = codice;
 	}
 
 	public void setNome(String nome) {
@@ -34,19 +34,19 @@ public class Indirizzo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "[" + this.id + ", " 
+		return "[" + this.codice + ", " 
 	               + this.nome + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return this.id.hashCode();
+		return this.codice.hashCode();
 	}
 
 	@Override
 	public boolean equals(Object object) {
 		Indirizzo indirizzo = (Indirizzo) object;
-		return (this.getId() == indirizzo.getId());
+		return (this.getCodice() == indirizzo.getCodice());
 	}
 	
 }

@@ -11,7 +11,24 @@ public class CorsoDiLaurea {
 	private Dipartimento dipartimento;
 	private Set<Corso> corsi;
 	
-	public CorsoDiLaurea() { }
+	public CorsoDiLaurea() { 
+		this.corsi = new HashSet<Corso>();
+	}
+	
+	public CorsoDiLaurea(String nome, Dipartimento dipartimento, Corso corso) { 
+		this.nome = nome;
+		this.dipartimento = dipartimento;
+		this.corsi = new HashSet<Corso>();
+		this.corsi.add(corso);
+	}
+	
+	public CorsoDiLaurea(Long codice, String nome, Dipartimento dipartimento, Corso corso) { 
+		this.codice = codice;
+		this.nome = nome;
+		this.dipartimento = dipartimento;
+		this.corsi = new HashSet<Corso>();
+		this.corsi.add(corso);
+	}
 	
 	public Long getCodice() {
 		return codice;
@@ -40,16 +57,20 @@ public class CorsoDiLaurea {
 	public void setDipartimento(Dipartimento dipartimento) {
 		this.dipartimento = dipartimento;
 	}
+	
+	public void setCorsi(Set<Corso> corsi) {
+		this.corsi = corsi;
+	}
 
-	public void aggiungiCorso(Corso corso) {
-		if (corsi == null) {
+	public void addCorso(Corso corso) {
+		if (this.corsi == null) {
 			this.corsi = new HashSet<Corso>();
 		}
 		this.corsi.add(corso);
 	}
 	
-	public void rimuoviCorso(Corso corso) {
-		if (corsi == null) {
+	public void removeCorso(Corso corso) {
+		if (this.corsi == null) {
 			this.corsi = new HashSet<Corso>();
 		}
 		this.corsi.remove(corso);
@@ -62,7 +83,7 @@ public class CorsoDiLaurea {
 		str.append(", {");
 		Iterator<Corso> iter = corsi.iterator();
 		while (iter.hasNext()) {
-			str.append(iter.next().getId());
+			str.append(iter.next().getCodice());
 			if (iter.hasNext()) {
 				str.append(", ");
 			}
